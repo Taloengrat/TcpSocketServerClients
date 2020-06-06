@@ -39,14 +39,12 @@ public class Client {
 
     class RunConect extends Thread {
 
-        public  RunConect() {
-
-        }
+        public  RunConect() { }
 
         @Override
         public void run() {
             // TODO Auto-generated method stub
-            while(!msg.equals("exit")) {
+            while(!msg.endsWith("exit")) {
 
                 try {
                     msg = dIn.readUTF();
@@ -54,9 +52,25 @@ public class Client {
                 } catch (Exception e) {
                     // TODO: handle exception
                     e.printStackTrace();
+                    try {
+                        socket.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                        textArea.setText(textArea.getText() + "\n" + "Server disconnect..." );
+                    }
+
                 }
 
             }
+
+
+
+
+            msg="exit";
+            JOptionPane.showMessageDialog(panelCenter, "Server disconnect...");
+
+
+
         }
 
     }
@@ -76,8 +90,13 @@ public class Client {
             RunConect con = new RunConect();
             con.start();
 
+            if (socket == null){
+                con.stop();
+            }
+
         }catch (Exception e){
             e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Port does'n exist!");
         }
     }
 
@@ -86,12 +105,13 @@ public class Client {
         //////////////////////////////////////////////////////////
 
         try {
-            dOut.writeUTF(name + " : "+data);
+            dOut.writeUTF(name + " : " + data);
             textArea.setText(textArea.getText() +"\n" +name + " : " + data);
         } catch (Exception e) {
             // TODO: handle exception
         }
 
+        txfMes.setText(null);
     }
 
     private AbstractAction SendDataAction = new AbstractAction() {
@@ -207,7 +227,7 @@ public class Client {
         f.getContentPane().add(panelCenter, BorderLayout.CENTER);
         f.getContentPane().add(panelPageEnd, BorderLayout.PAGE_END);
 
-        f.setLocation(500, 300);
+        f.setLocation(800, 300);
         f.pack();
 
         f.setVisible(true);
